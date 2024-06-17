@@ -12,14 +12,13 @@ A classe `Recommender` recebe uma lista de itens como entrada e fornece um méto
 Este script também define a função `main` que gera uma lista de itens com dados aleatórios e usa a classe `Recommender` para calcular a popularidade de cada item e imprimir a lista de itens ordenados por popularidade.
 """
 
-
+import asyncio
 from typing import List
 
-import asyncio
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from .schemas import Item, ItemClick
+from aula_01.schemas import Item, ItemClick
 
 
 class Recommender:
@@ -46,7 +45,7 @@ class Recommender:
     def __init__(self, data: List[Item]):
         self.data: List[Item] = data
 
-    async def __call__(self):
+    async def __call__(self) -> list[Item]:
         """
         Calculates the popularity score for each item and returns a list of items sorted by their popularity score.
 
@@ -56,7 +55,7 @@ class Recommender:
             A list of items sorted by their popularity score.
         """
         if not self.data:
-            raise ValueError('No data provided to the recommender')
+            raise ValueError("No data provided to the recommender")
 
         # Calculate scores for each item
         scores = []
@@ -95,7 +94,7 @@ class Recommender:
         df = pd.DataFrame([click.model_dump() for click in item.clicks])
 
         # Calculate the score as the sum of the inverse of the timestamp
-        score = (1 / df['timestamp']).sum()
+        score = (1 / df["timestamp"]).sum()
 
         return score
 
@@ -131,9 +130,12 @@ async def main():
             id=str(i),
             name=f"Item {i}",
             price=np.random.uniform(1, 100),
-            clicks=[ItemClick(item_id=str(i), timestamp=np.random.randint(1, 1000)) for j in range(np.random.randint(1, 10))],
+            clicks=[
+                ItemClick(item_id=str(i), timestamp=np.random.randint(1, 1000))
+                for j in range(np.random.randint(1, 10))
+            ],
             sentiment_scores=[np.random.randint(-10, 10) for _ in range(np.random.randint(1, 10))],
-            description=f"Description for Item {i}"
+            description=f"Description for Item {i}",
         )
         for i in range(10)
     ]
@@ -142,5 +144,5 @@ async def main():
     print(await recommender())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())
