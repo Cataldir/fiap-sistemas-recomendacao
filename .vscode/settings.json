@@ -9,7 +9,9 @@
     "javascript.updateImportsOnFileMove.enabled": "always",
     "C_Cpp.autocompleteAddParentheses": true,
     "C_Cpp.default.includePath": [
-        "${workspaceFolder}/**"
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/src/aula_04/**",
+        "${workspaceFolder}/src/aula_04/pkg/**"
     ],
     "autoDocstring.includeExtendedSummary": false,
     "autoDocstring.includeName": false,
@@ -75,5 +77,11 @@
     "azureFunctions.projectRuntime": "~4",
     "debug.internalConsoleOptions": "neverOpen",
     "azureFunctions.projectLanguageModel": 2,
-    "python.terminal.activateEnvironment": true
+    "python.terminal.activateEnvironment": true,
+    "files.associations": {
+      "MLTable": "yaml",
+      "*.js": "javascript",
+      "sparse": "cpp",
+      "dense": "cpp"
+    }
 }

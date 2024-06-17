@@ -1,5 +1,5 @@
-#include <Eigen/Sparse>
-#include <Eigen/Dense>
+#include <pkg/eigen-3.4.0/Eigen/Sparse>
+#include <pkg/eigen-3.4.0/Eigen/Dense>
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -28,7 +28,7 @@ Eigen::MatrixXd reduce_dimensionality(const Eigen::MatrixXd &mat, int num_compon
     auto S = svd.singularValues();
 
     // Selecionar os primeiros 'num_components' componentes
-    return U.leftCols(num_components) * S.asDiagonal().topLeftCorner(num_components, num_components);
+    return U.leftCols(num_components) * S.asDiagonal().toDenseMatrix().block(0, 0, num_components, num_components);
 }
 
 int main() {
