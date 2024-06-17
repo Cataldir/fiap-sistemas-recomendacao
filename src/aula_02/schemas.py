@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, Optional
 
 from pydantic import BaseModel
 
@@ -14,3 +14,12 @@ class UserProfile(BaseModel):
 class UserInteractions(BaseModel):
     user_id: int
     interactions: Dict[int, int]
+
+
+class Item(BaseModel):
+    id: str
+    name: str
+    price: float
+    clicks: Optional[int] = None
+    sentiment_scores: Optional[float] = None
+    description: Optional[str] = None
