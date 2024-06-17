@@ -39,7 +39,7 @@ int main() {
     triplets.emplace_back(0, 1, 3.0);
     triplets.emplace_back(2, 1, 4.0);
 
-    SparseMatrix mat(3, 2);
+    SparseMatrix mat(30, 20);
     mat.setFromTriplets(triplets.begin(), triplets.end());
 
     // Calcular similaridade de cosseno

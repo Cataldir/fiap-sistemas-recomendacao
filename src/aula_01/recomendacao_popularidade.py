@@ -43,7 +43,7 @@ class Recommender:
     """
 
     def __init__(self, data: List[Item]):
-        self.data: List[Item] = data
+        self.data = data
 
     async def __call__(self) -> list[Item]:
         """
@@ -134,7 +134,7 @@ async def main():
                 ItemClick(item_id=str(i), timestamp=np.random.randint(1, 1000))
                 for j in range(np.random.randint(1, 10))
             ],
-            sentiment_scores=[np.random.randint(-10, 10) for _ in range(np.random.randint(1, 10))],
+            sentiment_scores=[np.random.randint(-10, 10) for _ in range(np.random.randint(0, 1))],
             description=f"Description for Item {i}",
         )
         for i in range(10)

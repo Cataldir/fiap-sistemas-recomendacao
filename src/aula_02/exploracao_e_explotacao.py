@@ -1,8 +1,56 @@
 from typing import List
 
 import pandas as pd
+from scipy import stats
 
-from aula_02.schemas import UserInteractions, UserProfile
+from aula_02.schemas import UserInteractions, UserProfile, Item
+from aula_01.recomendacao_popularidade import Recommender
+
+
+class RecommenderForExploitation(Recommender):
+
+    def __init__(self, data: List[Item]):
+        self.data = data
+
+    @staticmethod
+    def calculate_click_score(item: Item) -> float:
+        """
+        Calculates the click score for a given item.
+
+        Parameters
+        ----------
+        item : Item
+            The item for which the click score is to be calculated.
+
+        Returns
+        -------
+        float
+            The click score of the item.
+        """
+        # Check if the item has clicks
+        if item.clicks is None:
+            return 0
+        return item.clicks
+
+    @staticmethod
+    def calculate_sentiment_score(item: Item) -> float:
+        """
+        Calculates the sentiment score for a given item.
+
+        Parameters
+        ----------
+        item : Item
+            The item for which the sentiment score is to be calculated.
+
+        Returns
+        -------
+        float
+            The sentiment score of the item.
+        """
+        # Check if the item has sentiment scores
+        if item.sentiment_scores is None:
+            return 0
+        return item.sentiment_scores
 
 
 class Exploiter:
@@ -10,18 +58,48 @@ class Exploiter:
         self.movies_metadata = movies_metadata
         self.ratings = ratings
 
-    def get_popular_movies(self, top_n: int = 10) -> pd.DataFrame:
-        popular_movies = self.movies_metadata.sort_values(
-            by=["vote_count", "vote_average"], ascending=False
-        )
+    @staticmethod
+    def __dataframe_to_items(data: pd.DataFrame) -> List[Item]:
+        items = []
+        for _, row in data.iterrows():
+            item = Item(
+                id=row['id'],
+                name=row['title'],
+                price=row['price'] or 0,
+                clicks=row['vote_count'],
+                sentiment_scores=row['vote_average'],
+                description=row['description'] or ""
+            )
+            items.append(item)
+        return items
+
+    @staticmethod
+    def __items_to_dataframe(items: List[Item]) -> pd.DataFrame:
+        data = []
+        for item in items:
+            data.append({
+                'id': item.id,
+                'title': item.name,
+                'vote_count': item.clicks,
+                'vote_average': item.sentiment_scores
+            })
+        return pd.DataFrame(data)
+
+    async def get_popular_movies(self, top_n: int = 10) -> pd.DataFrame:
+        data = self.__dataframe_to_items(self.movies_metadata)
+        recommender = RecommenderForExploitation(data)
+        popular_movies = await recommender()
+        popular_movies = self.__items_to_dataframe(popular_movies)  # type: ignore
         return popular_movies.head(top_n)
 
     def recommend_by_exploration(self, user_interactions: UserInteractions) -> List[int]:
-        total_interactions = sum(user_interactions.interactions.values())
+        normalized_values = stats.zscore(user_interactions.interactions.values())
+        normalized_values = normalized_values.tolist()
         weights = {
-            item_id: count / total_interactions
-            for item_id, count in user_interactions.interactions.items()
+            item_id: normalized_value
+            for (item_id, _), normalized_value in zip(user_interactions.interactions.items(), normalized_values)
         }
+
         return list(weights.keys())
 
     def exploit_similar_profiles(

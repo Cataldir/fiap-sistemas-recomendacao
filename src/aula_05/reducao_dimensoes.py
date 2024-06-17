@@ -1,4 +1,4 @@
-from sklearn.decomposition import TruncatedSVD, PCA
+from sklearn.decomposition import TruncatedSVD, PCA, NMF
 from scipy.sparse import csr_matrix
 
 
@@ -19,8 +19,15 @@ matriz_reduzida = svd.fit_transform(matriz_esparsa)
 pca = PCA(n_components=2)
 matriz_reduzida_pca = pca.fit_transform(matriz_esparsa)
 
+# Redução de dimensionalidade usando Matrix Factorization (NMF)
+nmf = NMF(n_components=2)
+matriz_reduzida_nmf = nmf.fit_transform(matriz_esparsa)
+
+
 # Comparativo de qualidade
 print("TruncatedSVD:")
 print(matriz_reduzida)
 print("PCA:")
 print(matriz_reduzida_pca)
+print("NMF:")
+print(matriz_reduzida_nmf)
