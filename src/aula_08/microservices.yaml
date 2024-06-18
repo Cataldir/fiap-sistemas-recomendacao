@@ -1,0 +1,20 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aula_08-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aula_08-service
+  template:
+    metadata:
+      labels:
+        app: aula_08-service
+    spec:
+      containers:
+        - name: aula_08-service
+          image: aula_08-service-image
+          ports:
+            - containerPort: 8080
